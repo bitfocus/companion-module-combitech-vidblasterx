@@ -4,12 +4,7 @@ See [HELP.md](./companion/HELP.md) and [LICENSE](./LICENSE)
 
 TODOs:
 
-- Audio Mixer
-- Player
-- Powerpoint
-- Still store
 - AUX/FX/MIX busses
-- Timer
 
 Some features are missing since I can't test them:
 

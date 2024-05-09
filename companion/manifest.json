@@ -1,7 +1,7 @@
 {
 	"id": "companion-module-combitech-vidblasterx",
 	"name": "companion-module-combitech-vidblasterx",
-	"shortname": "combitech-vidblasterx",
+	"shortname": "vidblasterx",
 	"description": "Control VidBlasterX via the TCP Server module",
 	"version": "0.1.0",
 	"license": "MIT",

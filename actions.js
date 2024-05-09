@@ -6,7 +6,6 @@ module.exports = function (self) {
 			name: 'Switcher: Auto',
 			options: [],
 			callback: async (event) => {
-				console.log("auto")
 				self.apiwrite('PGM 1, auto')
 			}
 		},
@@ -14,7 +13,6 @@ module.exports = function (self) {
 			name: 'Switcher: Take',
 			options: [],
 			callback: async (event) => {
-				console.log("take")
 				self.apiwrite('PGM 1, take')
 			}
 		},
@@ -29,7 +27,6 @@ module.exports = function (self) {
 				}
 			],
 			callback: async (event) => {
-				console.log('program'),
 				self.apiwrite('PGM 1, select, ' + event.options.source)
 			}
 		},
@@ -44,7 +41,6 @@ module.exports = function (self) {
 				}
 			],
 			callback: async (event) => {
-				console.log('preview'),
 				self.apiwrite('PVW 1, select, ' + event.options.source)
 			}
 		},
@@ -58,8 +54,7 @@ module.exports = function (self) {
 				}
 			],
 			callback: async (event) => {
-				console.log('Raw command')
-				self.apiread(event.options.command).then( (e) => {console.log('APIREAD RESULT: '+e)})
+				self.apiread(event.options.command).then( (e) => {self.verbose('APIREAD RESULT: ' + e)})
 			}
 		},
 		raw_write: {
@@ -72,11 +67,10 @@ module.exports = function (self) {
 				}
 			],
 			callback: async (event) => {
-				console.log('Raw command')
 				self.apiwrite(event.options.command)
 			}
 		},
-		play: {
+		player_play: {
 			name: 'Player: play',
 			options: [
 				{
@@ -87,11 +81,10 @@ module.exports = function (self) {
 				}
 			],
 			callback: async (event) => {
-				console.log('play')
 				self.apiwrite(event.options.player + ', play')
 			}
 		},
-		pause: {
+		player_pause: {
 			name: 'Player: pause',
 			options: [
 				{
@@ -102,11 +95,10 @@ module.exports = function (self) {
 				}
 			],
 			callback: async (event) => {
-				console.log('pause')
 				self.apiwrite(event.options.player + ', pause')
 			}
 		},
-		stop: {
+		player_stop: {
 			name: 'Player: stop',
 			options: [
 				{
@@ -117,11 +109,10 @@ module.exports = function (self) {
 				}
 			],
 			callback: async (event) => {
-				console.log('stop')
 				self.apiwrite(event.options.player + ', stop')
 			}
 		},
-		position: {
+		player_position: {
 			name: 'Player: Seek position',
 			options: [
 				{
@@ -137,8 +128,181 @@ module.exports = function (self) {
 				}
 			],
 			callback: async (event) => {
-				console.log('position')
 				self.apiwrite(event.options.player + ', position, ' + event.options.position)
+			}
+		},
+		player_open: {
+			name: 'Player: Open file',
+			options: [
+				{
+					id: 'player',
+					type: 'dropdown',
+					label: 'Player',
+					choices: self.CHOICES_PLAYER,				
+				},
+				{
+					id: 'path',
+					type: 'textinput',
+					label: 'Filename (including path)',
+				}
+			],
+			callback: async (event) => {
+				self.apiwrite(event.options.player + ', file, ' + event.options.path)
+			}
+		},
+		still_open: {
+			name: 'Still store: Open file',
+			options: [
+				{
+					id: 'stillStore',
+					type: 'dropdown',
+					label: 'Still store',
+					choices: self.CHOICES_STILL_STORES,				
+				},
+				{
+					id: 'path',
+					type: 'textinput',
+					label: 'Filename (including path)',
+				}
+			],
+			callback: async (event) => {
+				self.apiwrite(event.options.stillStore + ', file, ' + event.options.path)
+			}
+		},
+		still_grab: {
+			name: 'Still store: Grab image',
+			options: [{
+					id: 'stillStore',
+					type: 'dropdown',
+					label: 'Still store',
+					choices: self.CHOICES_STILL_STORES,				
+			}],
+			callback: async (event) => {
+				self.apiwrite(event.options.stillStore + ', grab')
+			}
+		},
+		// still_save: {}, - No API? At least undocumented
+		still_source: {
+			name: 'Still store: Select video source',
+			options: [
+				{
+					id: 'stillStore',
+					type: 'dropdown',
+					label: 'Still store',
+					choices: self.CHOICES_STILL_STORES,				
+				},
+				{
+					id: 'source',
+					type: 'dropdown',
+					label: 'Video Source',
+					choices: self.CHOICES_PGM_SOURCES,				
+				},
+			],
+			callback: async (event) => {
+				self.apiwrite(event.options.stillStore + ', videosource, '+ event.options.source)
+			}
+		},
+		timer_start: {
+			name: 'Timer: Start',
+			options: [{
+					id: 'timer',
+					type: 'dropdown',
+					label: 'Timer',
+					choices: self.CHOICES_TIMERS,				
+			}],
+			callback: async (event) => {
+				self.apiwrite(event.options.timer + ', start')
+			}
+		},
+		timer_stop: {
+			name: 'Timer: Stop',
+			options: [{
+					id: 'timer',
+					type: 'dropdown',
+					label: 'Timer',
+					choices: self.CHOICES_TIMERS,				
+			}],
+			callback: async (event) => {
+				self.apiwrite(event.options.timer + ', stop')
+			}
+		},
+		timer_reset: {
+			name: 'Timer: Reset',
+			options: [{
+					id: 'timer',
+					type: 'dropdown',
+					label: 'Timer',
+					choices: self.CHOICES_TIMERS,				
+			}],
+			callback: async (event) => {
+				self.apiwrite(event.options.timer + ', reset')
+			}
+		},
+		powerpoint_open: {
+			name: 'Powerpoint: Open file',
+			options: [
+				{
+					id: 'powerpoint',
+					type: 'dropdown',
+					label: 'Powerpoint module',
+					choices: self.CHOICES_POWERPOINT,				
+				},
+				{
+					id: 'path',
+					type: 'textinput',
+					label: 'Filename (including path)',
+				}
+			],
+			callback: async (event) => {
+				self.apiwrite(event.options.powerpoint + ', file, ' + event.options.path)
+			}
+		},
+		powerpoint_next: {
+			name: 'Powerpoint: Next slide',
+			options: [
+				{
+					id: 'powerpoint',
+					type: 'dropdown',
+					label: 'Powerpoint module',
+					choices: self.CHOICES_POWERPOINT,				
+				},
+			],
+			callback: async (event) => {
+				self.apiwrite(event.options.powerpoint + ', next')
+			}
+		},
+		powerpoint_previous: {
+			name: 'Powerpoint: Previous slide',
+			options: [
+				{
+					id: 'powerpoint',
+					type: 'dropdown',
+					label: 'Powerpoint module',
+					choices: self.CHOICES_POWERPOINT,				
+				},
+			],
+			callback: async (event) => {
+				self.apiwrite(event.options.powerpoint + ', prev')
+			}
+		},
+		mixer_volume: {
+			name: 'Audio Mixer: Set volume',
+			options: [
+				{
+					id: 'source',
+					type: 'textinput',
+					label: 'Audio source'
+				}, {
+					id: 'volume',
+					type: 'number',
+					label: 'Volume (0-100)',
+					default: 80,
+					min: 0,
+					max: 100					
+				}
+			],
+			callback: async (event) => {
+				self.apiwrite(`Audio Mixer 1, volume, ${event.options.source}, ${event.options.volume}%`)
 			}
 		}
 	})

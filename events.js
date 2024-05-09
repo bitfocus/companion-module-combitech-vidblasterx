@@ -10,7 +10,7 @@ var result = []
 function processCommandEvents(self, receivebuffer) {
     receiveCommandBacklog += receivebuffer
     let n = receiveCommandBacklog.indexOf('\n')
-    console.log(receiveCommandBacklog, n)
+    self.verbose(JSON.stringify(receiveCommandBacklog))
     while (~n) {
         var line = receiveCommandBacklog.substring(0, n).trim()
         switch (state) {
@@ -33,9 +33,9 @@ function processCommandEvents(self, receivebuffer) {
                 break
             case 'OK':
                 if (line == '.') { // End of response
-                    console.log('Message completed', result)
+                    self.verbose('Message completed: ', JSON.stringify(result))
                     var request = self.requestQueue.shift()
-                    console.log("Processing request", request)
+                    self.verbose("Processing request: ", JSON.stringify(request))
                     if (request.callback != null) {
                         request.callback(result)
                     }
@@ -48,9 +48,9 @@ function processCommandEvents(self, receivebuffer) {
             case 'Error 1':
                 if (line.slice(0,4) == '400 ') {
                     result.push(line)
-                    console.log("Failed", result)
+                    self.verbose("Failed: " + JSON.stringify(result))
                     var request = self.requestQueue.shift()
-                    console.log("Processing request", request)
+                    self.verbose("Processing request: " + JSON.stringify(request))
                     if (request.error != null) {
                         request.error(result)
                     }
@@ -60,7 +60,7 @@ function processCommandEvents(self, receivebuffer) {
                     self.log('error','Unexpected message: '+ line)
                 }
         }
-        console.log('Line processed. State: '+ state + ', line: '+ line)
+        self.verbose('Line processed. State: '+ state + ', line: '+ line)
         receiveCommandBacklog = receiveCommandBacklog.substring(n + 1)
         n = receiveCommandBacklog.indexOf('\n')
     }
@@ -73,9 +73,11 @@ function processEventstreamEvents(self, receivebuffer) {
     while (~n) {
         // get the first line from the backlog and split it by comma
         var lineparts = receiveEventBacklog.substring(0, n).split(',').map(e=>e.trim())
+
         if (lineparts[0] != 'ontally') {
-            console.log('LINE: '+JSON.stringify(lineparts))
+            self.verbose('LINE: '+JSON.stringify(lineparts))
         }
+
         if (lineparts[0] == 'onselected'){
             if (lineparts[1] == 'PGM 1') {
                 self.state['program'] = lineparts[2]
@@ -86,9 +88,10 @@ function processEventstreamEvents(self, receivebuffer) {
             self.checkFeedbacks()
         } else if (lineparts[0] == 'onmodules') {
             lineparts.shift()
-            this.apilist  = lineparts
-            this.updateModuleChoices()
+            self.apilist  = lineparts
+            self.updateModuleChoices()
         }
+
         receiveEventBacklog = receiveEventBacklog.substring(n + 1)
         n = receiveEventBacklog.indexOf('\n')
     }

@@ -7,8 +7,9 @@ const UpdateFeedbacks = require('./feedbacks')
 const UpdateVariableDefinitions = require('./variables')
 const {processCommandEvents, processEventstreamEvents} = require('./events')
 const UpdatePresets = require('./presets')
+const PollVariables = require('./poll')
 
-class ModuleInstance extends InstanceBase {
+class VidblasterXModuleInstance extends InstanceBase {
 	constructor(internal) {
 		super(internal)
 	}
@@ -20,8 +21,13 @@ class ModuleInstance extends InstanceBase {
 			preview: '',
 		}
 		this.requestQueue = []
-		this.CHOICES_PGM_SOURCES = [{id: '0', label: 'No Sources detected'}]
-		this.CHOICES_PLAYER = this.CHOICES_PGM_SOURCES
+		this.CHOICES_PGM_SOURCES = []
+		this.CHOICES_PLAYER = []
+		this.CHOICES_STILL_STORES = []
+		this.CHOICES_TIMERS = []
+		this.CHOICES_POWERPOINT = []
+		this.extraVariables = {}
+		this.pollJobs = {}
 
 		this.updateStatus(InstanceStatus.Connecting)
 
@@ -42,9 +48,13 @@ class ModuleInstance extends InstanceBase {
 		this.updateFeedbacks() // export feedbacks
 		this.updateVariableDefinitions() // export variable definitions
 		await this.updatePresets()
+		this.initPolling()
 	}
 	// When module gets deleted
 	async destroy() {
+		if (this.pollTimer) {
+			clearInterval(this.pollTimer)
+		}
 		this.log('debug', 'destroy')
 	}
 
@@ -52,6 +62,11 @@ class ModuleInstance extends InstanceBase {
 		this.config = config
 	}
 
+	verbose(message) {
+		if (this.config.debug) {
+			this.log('debug', message)
+		}
+	}
 	// Return config fields for web config
 	getConfigFields() {
 		return [
@@ -69,6 +84,12 @@ class ModuleInstance extends InstanceBase {
 				width: 4,
 				regex: Regex.PORT,
 			},
+			{
+				type: 'checkbox',
+				id: 'debug',
+				label: 'Enable debug logging (verbose)',
+				width: 12,
+			}
 		]
 	}
 
@@ -111,7 +132,6 @@ class ModuleInstance extends InstanceBase {
 		this.event_server.on('connect', ok_logger)
 
 		this.command_server.on('data', (receivebuffer) => {
-			console.log('Message received: '+ receivebuffer)
 			processCommandEvents(this, receivebuffer)
 		})
 
@@ -151,18 +171,54 @@ class ModuleInstance extends InstanceBase {
 	}
 
 	updateModuleChoices() {
+		var choicesCount = this.CHOICES_PLAYER.length
+		var stillStoreCount = this.CHOICES_STILL_STORES.length
+		var timerCount = this.CHOICES_TIMERS.length
+		var powerpointCount = this.CHOICES_POWERPOINT.length
+
 		this.CHOICES_PLAYER = this.apilist.filter(
 			e => e.slice(0,6)=='Player'
 		).map( e => {return {id: e, label: e}})
-		this.updateActions()
-		this.updateFeedbacks()
-		this.updatePresets()
+
+		this.CHOICES_STILL_STORES = this.apilist.filter(
+			e => e.slice(0,11)=='Still Store'
+		).map( e => {return {id: e, label: e}})
+
+		this.CHOICES_TIMERS = this.apilist.filter(
+			e => e.slice(0,6)=='Timer '
+		).map( e => {return {id: e, label: e}})
+
+		this.CHOICES_POWERPOINT = this.apilist.filter(
+			e => e.slice(0,11)=='Powerpoint '
+		).map( e => {return {id: e, label: e}})
+
+		if (choicesCount != this.CHOICES_PLAYER.length
+			|| stillStoreCount != this.CHOICES_STILL_STORES.length
+			|| timerCount != this.CHOICES_TIMERS.length
+			|| powerpointCount != this.CHOICES_POWERPOINT.length
+		) {
+			this.updateActions()
+			this.updateFeedbacks()
+			this.updatePresets()
+			this.updateVariableDefinitions()
+		}
+	}
+
+	initPolling() {
+		this.pollCounter = 0
+		if (this.pollTimer) {
+			clearInterval(this.pollTimer)
+		}
+		this.pollTimer = setInterval(async () => {
+			PollVariables(this)
+		},1000)
 	}
 
 	apiwrite(command) {
 		this.requestQueue.push({command: command, callback: null, error: null})
-		console.log(this.requestQueue)
-		console.log('apiwrite '+command+'\n')
+		this.verbose(this.requestQueue)
+		this.verbose('apiwrite '+command+'\n')
+		
 		this.command_server.send('apiwrite '+command+'\n')
 	}
 
@@ -182,8 +238,9 @@ class ModuleInstance extends InstanceBase {
 
 	async updateProgramSources() {
 		var sources = await this.apiread('PGM 1, sources')
+		sources = sources[0]
 		if (this.sources != sources) {
-			this.CHOICES_PGM_SOURCES = sources[0].split(',').map( 
+			this.CHOICES_PGM_SOURCES = sources.split(',').map( 
 				(src) => { return {id: src, label: src}
 			})
 			this.sources=sources
@@ -194,4 +251,4 @@ class ModuleInstance extends InstanceBase {
 	}
 }
 
-runEntrypoint(ModuleInstance, UpgradeScripts)
+runEntrypoint(VidblasterXModuleInstance, UpgradeScripts)
