@@ -1,4 +1,4 @@
-"use strict";
+'use strict'
 
 module.exports = function (self) {
 	self.setActionDefinitions({
@@ -7,14 +7,14 @@ module.exports = function (self) {
 			options: [],
 			callback: async (event) => {
 				self.apiwrite('PGM 1, auto')
-			}
+			},
 		},
 		take: {
 			name: 'Switcher: Take',
 			options: [],
 			callback: async (event) => {
 				self.apiwrite('PGM 1, take')
-			}
+			},
 		},
 		program: {
 			name: 'Switcher: Program',
@@ -23,12 +23,12 @@ module.exports = function (self) {
 					id: 'source',
 					type: 'dropdown',
 					label: 'Source',
-					choices: self.CHOICES_PGM_SOURCES,				
-				}
+					choices: self.CHOICES_PGM_SOURCES,
+				},
 			],
 			callback: async (event) => {
 				self.apiwrite('PGM 1, select, ' + event.options.source)
-			}
+			},
 		},
 		preview: {
 			name: 'Switcher: Preview',
@@ -37,12 +37,12 @@ module.exports = function (self) {
 					id: 'source',
 					type: 'dropdown',
 					label: 'Source',
-					choices: self.CHOICES_PGM_SOURCES,				
-				}
+					choices: self.CHOICES_PGM_SOURCES,
+				},
 			],
 			callback: async (event) => {
 				self.apiwrite('PVW 1, select, ' + event.options.source)
-			}
+			},
 		},
 		raw_read: {
 			name: 'Raw: apiread',
@@ -50,12 +50,14 @@ module.exports = function (self) {
 				{
 					id: 'command',
 					type: 'textinput',
-					label: 'apiread command'
-				}
+					label: 'apiread command',
+				},
 			],
 			callback: async (event) => {
-				self.apiread(event.options.command).then( (e) => {self.verbose('APIREAD RESULT: ' + e)})
-			}
+				self.apiread(event.options.command).then((e) => {
+					self.verbose('APIREAD RESULT: ' + e)
+				})
+			},
 		},
 		raw_write: {
 			name: 'Raw: apiwrite',
@@ -63,12 +65,12 @@ module.exports = function (self) {
 				{
 					id: 'command',
 					type: 'textinput',
-					label: 'apiwrite command'
-				}
+					label: 'apiwrite command',
+				},
 			],
 			callback: async (event) => {
 				self.apiwrite(event.options.command)
-			}
+			},
 		},
 		player_play: {
 			name: 'Player: play',
@@ -77,12 +79,12 @@ module.exports = function (self) {
 					id: 'player',
 					type: 'dropdown',
 					label: 'Player',
-					choices: self.CHOICES_PLAYER,				
-				}
+					choices: self.CHOICES_PLAYER,
+				},
 			],
 			callback: async (event) => {
 				self.apiwrite(event.options.player + ', play')
-			}
+			},
 		},
 		player_pause: {
 			name: 'Player: pause',
@@ -91,12 +93,12 @@ module.exports = function (self) {
 					id: 'player',
 					type: 'dropdown',
 					label: 'Player',
-					choices: self.CHOICES_PLAYER,				
-				}
+					choices: self.CHOICES_PLAYER,
+				},
 			],
 			callback: async (event) => {
 				self.apiwrite(event.options.player + ', pause')
-			}
+			},
 		},
 		player_stop: {
 			name: 'Player: stop',
@@ -105,12 +107,12 @@ module.exports = function (self) {
 					id: 'player',
 					type: 'dropdown',
 					label: 'Player',
-					choices: self.CHOICES_PLAYER,				
-				}
+					choices: self.CHOICES_PLAYER,
+				},
 			],
 			callback: async (event) => {
 				self.apiwrite(event.options.player + ', stop')
-			}
+			},
 		},
 		player_position: {
 			name: 'Player: Seek position',
@@ -119,17 +121,17 @@ module.exports = function (self) {
 					id: 'player',
 					type: 'dropdown',
 					label: 'Player',
-					choices: self.CHOICES_PLAYER,				
+					choices: self.CHOICES_PLAYER,
 				},
 				{
 					id: 'position',
 					type: 'textinput',
 					label: 'Position (timestamp in ms or a percentage followed by a "%" sign)',
-				}
+				},
 			],
 			callback: async (event) => {
 				self.apiwrite(event.options.player + ', position, ' + event.options.position)
-			}
+			},
 		},
 		player_open: {
 			name: 'Player: Open file',
@@ -138,17 +140,17 @@ module.exports = function (self) {
 					id: 'player',
 					type: 'dropdown',
 					label: 'Player',
-					choices: self.CHOICES_PLAYER,				
+					choices: self.CHOICES_PLAYER,
 				},
 				{
 					id: 'path',
 					type: 'textinput',
 					label: 'Filename (including path)',
-				}
+				},
 			],
 			callback: async (event) => {
 				self.apiwrite(event.options.player + ', file, ' + event.options.path)
-			}
+			},
 		},
 		still_open: {
 			name: 'Still store: Open file',
@@ -157,29 +159,31 @@ module.exports = function (self) {
 					id: 'stillStore',
 					type: 'dropdown',
 					label: 'Still store',
-					choices: self.CHOICES_STILL_STORES,				
+					choices: self.CHOICES_STILL_STORES,
 				},
 				{
 					id: 'path',
 					type: 'textinput',
 					label: 'Filename (including path)',
-				}
+				},
 			],
 			callback: async (event) => {
 				self.apiwrite(event.options.stillStore + ', file, ' + event.options.path)
-			}
+			},
 		},
 		still_grab: {
 			name: 'Still store: Grab image',
-			options: [{
+			options: [
+				{
 					id: 'stillStore',
 					type: 'dropdown',
 					label: 'Still store',
-					choices: self.CHOICES_STILL_STORES,				
-			}],
+					choices: self.CHOICES_STILL_STORES,
+				},
+			],
 			callback: async (event) => {
 				self.apiwrite(event.options.stillStore + ', grab')
-			}
+			},
 		},
 		// still_save: {}, - No API? At least undocumented
 		still_source: {
@@ -189,54 +193,60 @@ module.exports = function (self) {
 					id: 'stillStore',
 					type: 'dropdown',
 					label: 'Still store',
-					choices: self.CHOICES_STILL_STORES,				
+					choices: self.CHOICES_STILL_STORES,
 				},
 				{
 					id: 'source',
 					type: 'dropdown',
 					label: 'Video Source',
-					choices: self.CHOICES_PGM_SOURCES,				
+					choices: self.CHOICES_PGM_SOURCES,
 				},
 			],
 			callback: async (event) => {
-				self.apiwrite(event.options.stillStore + ', videosource, '+ event.options.source)
-			}
+				self.apiwrite(event.options.stillStore + ', videosource, ' + event.options.source)
+			},
 		},
 		timer_start: {
 			name: 'Timer: Start',
-			options: [{
+			options: [
+				{
 					id: 'timer',
 					type: 'dropdown',
 					label: 'Timer',
-					choices: self.CHOICES_TIMERS,				
-			}],
+					choices: self.CHOICES_TIMERS,
+				},
+			],
 			callback: async (event) => {
 				self.apiwrite(event.options.timer + ', start')
-			}
+			},
 		},
 		timer_stop: {
 			name: 'Timer: Stop',
-			options: [{
+			options: [
+				{
 					id: 'timer',
 					type: 'dropdown',
 					label: 'Timer',
-					choices: self.CHOICES_TIMERS,				
-			}],
+					choices: self.CHOICES_TIMERS,
+				},
+			],
 			callback: async (event) => {
 				self.apiwrite(event.options.timer + ', stop')
-			}
+			},
 		},
 		timer_reset: {
 			name: 'Timer: Reset',
-			options: [{
+			options: [
+				{
 					id: 'timer',
 					type: 'dropdown',
 					label: 'Timer',
-					choices: self.CHOICES_TIMERS,				
-			}],
+					choices: self.CHOICES_TIMERS,
+				},
+			],
 			callback: async (event) => {
 				self.apiwrite(event.options.timer + ', reset')
-			}
+			},
 		},
 		powerpoint_open: {
 			name: 'Powerpoint: Open file',
@@ -245,17 +255,17 @@ module.exports = function (self) {
 					id: 'powerpoint',
 					type: 'dropdown',
 					label: 'Powerpoint module',
-					choices: self.CHOICES_POWERPOINT,				
+					choices: self.CHOICES_POWERPOINT,
 				},
 				{
 					id: 'path',
 					type: 'textinput',
 					label: 'Filename (including path)',
-				}
+				},
 			],
 			callback: async (event) => {
 				self.apiwrite(event.options.powerpoint + ', file, ' + event.options.path)
-			}
+			},
 		},
 		powerpoint_next: {
 			name: 'Powerpoint: Next slide',
@@ -264,12 +274,12 @@ module.exports = function (self) {
 					id: 'powerpoint',
 					type: 'dropdown',
 					label: 'Powerpoint module',
-					choices: self.CHOICES_POWERPOINT,				
+					choices: self.CHOICES_POWERPOINT,
 				},
 			],
 			callback: async (event) => {
 				self.apiwrite(event.options.powerpoint + ', next')
-			}
+			},
 		},
 		powerpoint_previous: {
 			name: 'Powerpoint: Previous slide',
@@ -278,12 +288,12 @@ module.exports = function (self) {
 					id: 'powerpoint',
 					type: 'dropdown',
 					label: 'Powerpoint module',
-					choices: self.CHOICES_POWERPOINT,				
+					choices: self.CHOICES_POWERPOINT,
 				},
 			],
 			callback: async (event) => {
 				self.apiwrite(event.options.powerpoint + ', prev')
-			}
+			},
 		},
 		mixer_volume: {
 			name: 'Audio Mixer: Set volume',
@@ -291,19 +301,20 @@ module.exports = function (self) {
 				{
 					id: 'source',
 					type: 'textinput',
-					label: 'Audio source'
-				}, {
+					label: 'Audio source',
+				},
+				{
 					id: 'volume',
 					type: 'number',
 					label: 'Volume (0-100)',
 					default: 80,
 					min: 0,
-					max: 100					
-				}
+					max: 100,
+				},
 			],
 			callback: async (event) => {
 				self.apiwrite(`Audio Mixer 1, volume, ${event.options.source}, ${event.options.volume}%`)
-			}
-		}
+			},
+		},
 	})
 }
