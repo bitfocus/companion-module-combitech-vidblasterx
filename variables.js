@@ -1,4 +1,4 @@
-"use strict";
+'use strict'
 
 module.exports = async function (self) {
 	var variables = [
@@ -10,7 +10,7 @@ module.exports = async function (self) {
 			variables.push(self.extraVariables[key][variable])
 		}
 	}
-	self.verbose("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
+	self.verbose('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
 	self.verbose(JSON.stringify(variables))
 	self.setVariableDefinitions(variables)
 }
