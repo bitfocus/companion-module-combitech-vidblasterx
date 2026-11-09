@@ -36,6 +36,7 @@ class VidblasterXModuleInstance extends InstanceBase {
 		} else if (!this.config.host && this.config.port) {
 			this.updateStatus(InstanceStatus.BadConfig, 'Missing Server IP address or hostname')
 		} else if (isNaN(parseInt(this.config.port))) {
+			this.log('debug', this.config.port)
 			this.updateStatus(InstanceStatus.BadConfig, 'Invalid port number (NaN)')
 		} else if (this.config.host && this.config.port) {
 			this.config.port = parseInt(this.config.port)
@@ -218,21 +219,26 @@ class VidblasterXModuleInstance extends InstanceBase {
 		this.requestQueue.push({command: command, callback: null, error: null})
 		this.verbose(this.requestQueue)
 		this.verbose('apiwrite '+command+'\n')
-		
-		this.command_server.send('apiwrite '+command+'\n')
+		if (this.command_server !== undefined) {
+			this.command_server.send('apiwrite '+command+'\n')
+		}
 	}
 
 	async apiread(command) {
 		return new Promise( (resolve, reject) => {
 			this.requestQueue.push({command: command, callback: resolve, error: reject})
-			this.command_server.send('apiread '+command+'\n')
+			if (this.command_server !== undefined) {
+				this.command_server.send('apiread '+command+'\n')
+			}
 		})
 	}
 
 	async apilist() {
 		return new Promise( (resolve, reject) => {
 			this.requestQueue.push({command: 'apilist', callback: resolve, error: reject})
-			this.command_server.send('apilist\n')
+			if (this.command_server !== undefined) {
+				this.command_server.send('apilist\n')
+			}
 		})
 	}
 
